@@ -1,0 +1,199 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* Sidebar specific colors */
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 222.2 47.4% 11.2%;
+    --sidebar-muted: 215.4 16.3% 46.9%;
+    --sidebar-muted-foreground: 215.4 16.3% 46.9%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+
+    /* Chart colors */
+    --chart-primary: 221.2 83.2% 53.3%;
+    --chart-secondary: 142.1 76.2% 36.3%;
+    --chart-tertiary: 47.9 95.8% 53.1%;
+    --chart-quaternary: 346.8 77.2% 49.8%;
+    --chart-quinary: 262.1 83.3% 57.8%;
+    --chart-senary: 199 89.7% 48.2%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+
+    /* Sidebar specific colors */
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-muted: 217.2 32.6% 17.5%;
+    --sidebar-muted-foreground: 215 20.2% 65.1%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+
+    /* Chart colors - brighter in dark mode for better visibility */
+    --chart-primary: 217.2 91.2% 59.8%;
+    --chart-secondary: 142.1 70.6% 45.3%;
+    --chart-tertiary: 47.9 95.8% 53.1%;
+    --chart-quaternary: 346.8 77.2% 49.8%;
+    --chart-quinary: 262.1 83.3% 57.8%;
+    --chart-senary: 199 89.7% 48.2%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Compact mode styles */
+.compact-mode {
+  --compact-scale: 0.9;
+  --compact-spacing: 0.75;
+}
+
+/* Use direct CSS instead of @apply to avoid circular dependencies */
+.compact-mode .card {
+  padding: 0.75rem;
+}
+
+.compact-mode h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.compact-mode h2 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.compact-mode h3 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.compact-mode .text-2xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.compact-mode .p-8 {
+  padding: 1rem;
+}
+
+.compact-mode .p-6 {
+  padding: 0.75rem;
+}
+
+.compact-mode .p-4 {
+  padding: 0.5rem;
+}
+
+.compact-mode .space-y-4 > * + * {
+  margin-top: 0.5rem;
+}
+
+.compact-mode .gap-4 {
+  gap: 0.5rem;
+}
+
+.compact-mode .h-16 {
+  height: 3rem;
+}
+
+/* Enhanced chart colors */
+.recharts-default-tooltip {
+  background-color: hsl(var(--background)) !important;
+  border-color: hsl(var(--border)) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.recharts-tooltip-label {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500 !important;
+}
+
+.recharts-tooltip-item {
+  color: hsl(var(--foreground)) !important;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: hsl(var(--muted-foreground)) !important;
+}
+
+.recharts-legend-item-text {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Improved scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: hsl(var(--muted) / 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Improved focus styles */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring));
+}
+
