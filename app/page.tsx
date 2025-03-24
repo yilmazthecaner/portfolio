@@ -41,10 +41,9 @@ export default function DashboardPage() {
   const { user, loading, refreshUser } = useUser();
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Refresh user only once on mount
   useEffect(() => {
     refreshUser();
-  }, []); // changed dependency array
+  }, []); 
 
   const handleViewAllTransactions = () => {
     setActiveTab("transactions");

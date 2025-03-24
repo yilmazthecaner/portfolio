@@ -86,7 +86,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const processTransaction = async (transaction: TransactionFormData): Promise<Transaction> => {
     try {
-      // This will call the API which will update the budget and return the transaction
       const response = await fetch("/api/transactions", {
         method: "POST",
         headers: {
@@ -101,7 +100,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       const result = await response.json()
 
-      // Refresh user data to get updated budget
       await refreshUser()
 
       return result
