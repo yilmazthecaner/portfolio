@@ -11,7 +11,9 @@ const getCurrentLanguage = () => {
 // Get translation function
 const t = (key: string): string => {
   const language = getCurrentLanguage()
-  return translations[language][key] || translations.en[key] || key
+  return (translations as Record<string, Record<string, string>>)[language][key] ||
+         (translations as Record<string, Record<string, string>>).en[key] ||
+         key
 }
 
 export const generatePdfReport = async () => {
@@ -50,7 +52,7 @@ export const generatePdfReport = async () => {
 
   // Add asset allocation
   doc.setFontSize(16)
-  doc.text(t("assetSummary"), 14, doc.lastAutoTable.finalY + 15)
+  doc.text(t("assetSummary"), 14, (doc as any).lastAutoTable.finalY + 15)
 
   const assetData = [
     ["Stocks", "$25,000.00", "55.3%"],
@@ -61,7 +63,7 @@ export const generatePdfReport = async () => {
   ]
 
   autoTable(doc, {
-    startY: doc.lastAutoTable.finalY + 20,
+    startY: (doc as any).lastAutoTable.finalY + 20,
     head: [[t("asset"), t("value"), t("allocation")]],
     body: assetData,
     theme: "grid",
@@ -70,7 +72,7 @@ export const generatePdfReport = async () => {
 
   // Add transaction history
   doc.setFontSize(16)
-  doc.text(t("transactionSummary"), 14, doc.lastAutoTable.finalY + 15)
+  doc.text(t("transactionSummary"), 14, (doc as any).lastAutoTable.finalY + 15)
 
   const transactionData = [
     ["2023-12-01", t("bought"), "AAPL", "5", "$178.72", "$893.60"],
@@ -81,7 +83,7 @@ export const generatePdfReport = async () => {
   ]
 
   autoTable(doc, {
-    startY: doc.lastAutoTable.finalY + 20,
+    startY: (doc as any).lastAutoTable.finalY + 20,
     head: [[t("date"), t("type"), t("asset"), t("amount"), t("price"), t("total")]],
     body: transactionData,
     theme: "grid",
@@ -102,6 +104,6 @@ export const generatePdfReport = async () => {
   }
 
   // Save the PDF
-  doc.save(`${userName}-Portfolio-${currentDate}.pdf`)
+  doc.save(`${userName} portfolio report ${currentDate}.pdf`)
 }
 

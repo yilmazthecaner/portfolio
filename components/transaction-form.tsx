@@ -40,6 +40,12 @@ const assets = [
   { id: "META", name: "Meta Platforms, Inc.", icon: "👓" },
 ]
 
+const transferAssets = [
+  { id: "USD", name: "USD Dollar", icon: "$" },
+  { id: "TRY", name: "Turkish Lira", icon: "₺" },
+  { id: "EUR", name: "Euro", icon: "€" },
+]
+
 export function TransactionForm({ onTransactionComplete }: { onTransactionComplete?: () => void }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -135,31 +141,34 @@ export function TransactionForm({ onTransactionComplete }: { onTransactionComple
             <FormField
               control={form.control}
               name="asset"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("asset")}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("selectAsset")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {assets.map((asset) => (
-                        <SelectItem key={asset.id} value={asset.id}>
-                          <div className="flex items-center gap-2">
-                            <span>{asset.icon}</span>
-                            <span>
-                              {asset.id} - {asset.name}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const assetOptions = form.watch("type") === "transfer" ? transferAssets : assets
+                return (
+                  <FormItem>
+                    <FormLabel>{t("asset")}</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("selectAsset")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {assetOptions.map((asset) => (
+                          <SelectItem key={asset.id} value={asset.id}>
+                            <div className="flex items-center gap-2">
+                              <span>{asset.icon}</span>
+                              <span>
+                                {asset.id} - {asset.name}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }}
             />
           </div>
 
