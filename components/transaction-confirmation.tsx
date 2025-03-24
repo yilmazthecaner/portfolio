@@ -76,7 +76,7 @@ export function TransactionConfirmation({ transaction, onDismiss }: TransactionC
       case "AAPL":
         return "🍎"
       case "MSFT":
-        return "🪟"
+        return "💻"
       case "GOOGL":
         return "🔍"
       case "AMZN":

@@ -32,7 +32,7 @@ const formSchema = z.object({
 
 const assets = [
   { id: "AAPL", name: "Apple Inc.", icon: "🍎" },
-  { id: "MSFT", name: "Microsoft Corporation", icon: "🪟" },
+  { id: "MSFT", name: "Microsoft Corporation", icon: "💻" },
   { id: "GOOGL", name: "Alphabet Inc.", icon: "🔍" },
   { id: "AMZN", name: "Amazon.com, Inc.", icon: "📦" },
   { id: "TSLA", name: "Tesla, Inc.", icon: "🚗" },

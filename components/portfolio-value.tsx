@@ -21,18 +21,23 @@ import {
 } from "@/components/ui/select";
 
 const data = [
+  { date: "2024-01-01", value: 10000 },
+  { date: "2024-02-01", value: 17000 },
+  { date: "2024-03-01", value: 23000 },
+  { date: "2024-04-01", value: 18000 },
+  { date: "2024-05-01", value: 28000 },
   { date: "2024-06-01", value: 30000 },
   { date: "2024-07-01", value: 32000 },
   { date: "2024-08-01", value: 31500 },
-  { date: "2024-09-01", value: 33500 },
+  { date: "2024-09-01", value: 30500 },
   { date: "2024-10-01", value: 35000 },
   { date: "2024-11-01", value: 38000 },
-  { date: "2024-12-01", value: 42000 },
+  { date: "2024-12-01", value: 42000.52 },
   { date: "2025-01-01", value: 45231.89 },
-  { date: "2025-03-01", value: 38000 },
-  { date: "2025-03-05", value: 35300 },
-  { date: "2025-03-20", value: 34300 },
-  { date: "2025-03-24", value: 40500 },
+  { date: "2025-03-01", value: 33000 },
+  { date: "2025-03-05", value: 25300 },
+  { date: "2025-03-20", value: 17300 },
+  { date: "2025-03-24", value: 31500 },
 ];
 
 export function PortfolioValue({

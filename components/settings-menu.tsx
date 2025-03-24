@@ -174,14 +174,14 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="tr" id="tr" />
                         <Label htmlFor="tr" className="flex items-center">
-                          <span className="mr-2">🇹🇷</span>
+                          <span className="mr-2">TR</span>
                           Türkçe
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="en" id="en" />
                         <Label htmlFor="en" className="flex items-center">
-                          <span className="mr-2">🇬🇧</span>
+                          <span className="mr-2">EN</span>
                           English
                         </Label>
                       </div>
