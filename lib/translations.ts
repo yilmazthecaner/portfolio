@@ -61,6 +61,10 @@ export const translations = {
     transactionProcessedMessage: "İşleminiz başarıyla işlendi ve hesabınıza yansıtıldı.",
     budgetImpact: "Bütçe Etkisi",
     newBalance: "Yeni Bakiye",
+    transferAmount: "Transfer Miktarı",
+    transferDirection: "Transfer Yönü",
+    sendMoney: "Gönder",
+    receiveMoney: "Al",
 
     // Transaction History
     filterTransactions: "İşlemleri Filtrele",
@@ -218,6 +222,12 @@ export const translations = {
     transactionProcessedMessage: "Your transaction has been processed successfully and reflected in your account.",
     budgetImpact: "Budget Impact",
     newBalance: "New Balance",
+    transferAmount: "Transfer Amount",
+    transferDirection: "Transfer Direction",
+    sendMoney: "Send",
+    receiveMoney: "Receive",
+    // Add key for transfer success message:
+    transferred: "Transferred",
 
     // Transaction History
     filterTransactions: "Filter Transactions",

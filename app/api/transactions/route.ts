@@ -1,5 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server"
-import type { Transaction, TransactionFormData } from "@/types/transaction"
+import type { Transaction, TransactionFormData as BaseTransactionFormData } from "@/types/transaction"
+
+interface TransactionFormData extends BaseTransactionFormData {
+  transferDirection?: "send" | "receive";
+}
 import { v4 as uuidv4 } from "uuid"
 
 // Import the current user to update budget
@@ -140,7 +144,12 @@ export async function GET(request: NextRequest) {
 // POST handler for creating a new transaction
 export async function POST(request: NextRequest) {
   try {
-    const data: TransactionFormData = await request.json()
+    const data: TransactionFormData = await request.json();
+
+    // Set default transferDirection if not provided for transfers
+    if (data.type === "transfer" && !data.transferDirection) {
+      data.transferDirection = "send";
+    }
 
     // Validate required fields
     if (!data.type || !data.asset || data.amount <= 0 || data.price <= 0) {
@@ -199,12 +208,22 @@ export async function POST(request: NextRequest) {
         currentUser.budget.activePositions = Math.max(0, currentUser.budget.activePositions - 1)
       }
     } else if (data.type === "transfer") {
-      // Transfer just adds to cash
-      currentUser.budget.cash += value
+      // Handle transfer transactions based on transferDirection
+      if (data.transferDirection === "send") {
+        currentUser.budget.cash -= value; // Sending money: deduct cash
+      } else if (data.transferDirection === "receive") {
+        currentUser.budget.cash += value; // Receiving money: add cash
+      } else {
+        // Fallback behavior if transferDirection is not provided
+        currentUser.budget.cash += value;
+      }
     }
 
     // Update total balance
     currentUser.budget.totalBalance = currentUser.budget.cash + currentUser.budget.investments
+
+    // Log new transaction for debugging
+    console.log("New transaction submitted:", newTransaction);
 
     // Add to our mock database
     transactions.unshift(newTransaction)
