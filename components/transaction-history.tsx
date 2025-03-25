@@ -191,11 +191,11 @@ export function TransactionHistory({ limit, showFilters = true, refreshTrigger =
           }
 
           if (filters.dateFrom) {
-            filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) >= new Date(filters.dateFrom))
+            filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) >= new Date(filters.dateFrom!))
           }
 
           if (filters.dateTo) {
-            filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) <= new Date(filters.dateTo))
+            filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) <= new Date(filters.dateTo!))
           }
 
           if (filters.status) {
@@ -203,8 +203,7 @@ export function TransactionHistory({ limit, showFilters = true, refreshTrigger =
           }
         }
 
-        console.log("Using mock transaction data in TransactionHistory")
-        setTransactions(filteredTransactions)
+        setTransactions(filteredTransactions as Transaction[])
         setError(null)
       } catch (err) {
         console.error("Error in fetchTransactions:", err)
@@ -223,7 +222,7 @@ export function TransactionHistory({ limit, showFilters = true, refreshTrigger =
             userId: "user1",
             transferDirection: "send",
           },
-        ])
+        ] as Transaction[])
       } finally {
         setLoading(false)
       }

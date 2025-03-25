@@ -133,7 +133,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
         transferDirection: transaction.transferDirection,
       }
 
-      console.log("Created mock transaction:", result)
 
       // Update user data locally to reflect the transaction
       if (user) {

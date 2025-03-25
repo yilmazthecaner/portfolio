@@ -128,7 +128,6 @@ export const transactionApi = {
       },
     ]
 
-    console.log("Using mock transaction data instead of API call")
 
     // Apply filters if provided
     let filteredTransactions = [...MOCK_TRANSACTIONS]
@@ -143,11 +142,11 @@ export const transactionApi = {
       }
 
       if (filters.dateFrom) {
-        filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) >= new Date(filters.dateFrom))
+        filteredTransactions = filteredTransactions.filter((t) => filters.dateFrom && new Date(t.date) >= new Date(filters.dateFrom))
       }
 
       if (filters.dateTo) {
-        filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) <= new Date(filters.dateTo))
+        filteredTransactions = filteredTransactions.filter((t) => filters.dateTo && new Date(t.date) <= new Date(filters.dateTo))
       }
 
       if (filters.status) {
@@ -158,7 +157,7 @@ export const transactionApi = {
     // Sort by date (newest first)
     filteredTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-    return Promise.resolve(filteredTransactions)
+    return Promise.resolve(filteredTransactions as Transaction[])
   },
 
   // Get a single transaction by ID
@@ -185,7 +184,7 @@ export const transactionApi = {
       throw new Error(`Transaction with ID ${id} not found`)
     }
 
-    return Promise.resolve(transaction)
+    return Promise.resolve(transaction as Transaction)
   },
 
   // Create a new transaction - mock implementation
@@ -204,7 +203,6 @@ export const transactionApi = {
       transferDirection: data.transferDirection,
     }
 
-    console.log("Created mock transaction:", newTransaction)
     return Promise.resolve(newTransaction)
   },
 
@@ -224,13 +222,11 @@ export const transactionApi = {
       transferDirection: data.transferDirection,
     }
 
-    console.log("Updated mock transaction:", updatedTransaction)
     return Promise.resolve(updatedTransaction)
   },
 
   // Delete a transaction - mock implementation
   async deleteTransaction(id: string): Promise<void> {
-    console.log(`Deleted mock transaction with ID: ${id}`)
     return Promise.resolve()
   },
 }
@@ -242,7 +238,6 @@ export const userApi = {
     try {
       // Use direct mock data instead of API call
       // This bypasses the API route that's causing issues
-      console.log("Using mock user data instead of API call")
       return Promise.resolve({ ...FALLBACK_USER })
     } catch (error) {
       console.error("Error fetching current user:", error)
@@ -259,7 +254,6 @@ export const userApi = {
       if (data.email) updatedUser.email = data.email
       if (data.imageUrl) updatedUser.imageUrl = data.imageUrl
 
-      console.log("Using mock update instead of API call")
       return Promise.resolve(updatedUser)
     } catch (error) {
       console.error("Error updating user:", error)
@@ -272,7 +266,6 @@ export const userApi = {
     try {
       // Mock image upload
       const imageUrl = `/placeholder.svg?height=128&width=128&text=Profile+${Date.now().toString().substring(0, 8)}`
-      console.log("Using mock image upload instead of API call")
       return Promise.resolve({ imageUrl })
     } catch (error) {
       console.error("Error uploading profile image:", error)

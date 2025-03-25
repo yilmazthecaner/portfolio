@@ -238,9 +238,6 @@ export async function POST(request: NextRequest) {
     // Update total balance
     currentUser.budget.totalBalance = currentUser.budget.cash + currentUser.budget.investments
 
-    // Log new transaction for debugging
-    console.log("New transaction submitted:", newTransaction)
-
     // Add to our mock database
     transactions.unshift(newTransaction)
 

@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { TransactionDetails } from "@/components/transaction-details"
 
 // Mock transactions for fallback
-const MOCK_TRANSACTIONS = [
+const MOCK_TRANSACTIONS: Transaction[] = [
   {
     id: "t1",
     type: "buy",
@@ -79,6 +79,7 @@ interface Transaction {
   status: "completed" | "pending" | "failed"
   transferDirection?: "send" | "receive"
   value: number
+  userId: string
 }
 
 export function RecentTransactions({
@@ -100,7 +101,7 @@ export function RecentTransactions({
       setLoading(true)
       try {
         // Mock transactions data - always use this instead of API calls
-        const MOCK_TRANSACTIONS = [
+        const MOCK_TRANSACTIONS: Transaction[] = [
           {
             id: "t1",
             type: "buy",
@@ -160,7 +161,6 @@ export function RecentTransactions({
           },
         ]
 
-        console.log("Using mock transaction data in RecentTransactions")
         setTransactions(MOCK_TRANSACTIONS)
       } catch (error) {
         console.error("Error in fetchTransactions:", error)
