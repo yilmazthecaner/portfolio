@@ -13,6 +13,8 @@ import {
   Calendar,
   Hash,
   CreditCard,
+  ArrowUpRight,
+  ArrowDownLeft,
 } from "lucide-react"
 import type { Transaction } from "@/types/transaction"
 import { useTranslation } from "@/context/translation-context"
@@ -64,7 +66,13 @@ export function TransactionConfirmation({ transaction, onDismiss }: TransactionC
       case "sell":
         return <ArrowUpIcon className="h-5 w-5 text-rose-500" />
       case "transfer":
-        return <ArrowRightLeft className="h-5 w-5 text-blue-500" />
+        if (transaction.transferDirection === "send") {
+          return <ArrowUpRight className="h-5 w-5 text-rose-500" />
+        } else if (transaction.transferDirection === "receive") {
+          return <ArrowDownLeft className="h-5 w-5 text-emerald-500" />
+        } else {
+          return <ArrowRightLeft className="h-5 w-5 text-blue-500" />
+        }
       default:
         return null
     }
@@ -89,6 +97,10 @@ export function TransactionConfirmation({ transaction, onDismiss }: TransactionC
         return "👓"
       case "USD":
         return "💵"
+      case "TRY":
+        return "₺"
+      case "EUR":
+        return "€"
       default:
         return "📈"
     }
@@ -113,17 +125,31 @@ export function TransactionConfirmation({ transaction, onDismiss }: TransactionC
         investClass: "text-rose-500",
       }
     } else {
+      // For transfers, check the direction
+      const isSending = transaction.transferDirection === "send"
       return {
-        cash: transaction.value,
+        cash: isSending ? -transaction.value : transaction.value,
         investments: 0,
-        icon: <DollarSign className="h-5 w-5 text-blue-500" />,
-        cashClass: "text-emerald-500",
+        icon: isSending ? (
+          <TrendingDown className="h-5 w-5 text-rose-500" />
+        ) : (
+          <TrendingUp className="h-5 w-5 text-emerald-500" />
+        ),
+        cashClass: isSending ? "text-rose-500" : "text-emerald-500",
         investClass: "",
       }
     }
   }
 
   const budgetImpact = getBudgetImpact()
+
+  // Get transaction title based on type and direction
+  const getTransactionTitle = () => {
+    if (transaction.type === "transfer") {
+      return transaction.transferDirection === "send" ? t("moneySent") : t("moneyReceived")
+    }
+    return transaction.type === "buy" ? t("bought") : t("sold")
+  }
 
   return (
     <motion.div
@@ -158,11 +184,20 @@ export function TransactionConfirmation({ transaction, onDismiss }: TransactionC
               <h3 className="font-medium text-lg flex items-center gap-2">
                 {getTypeIcon(transaction.type)}
                 <span className="capitalize">
-                  {t(transaction.type as "buy" | "sell" | "transfer")} {transaction.asset}
+                  {transaction.type === "transfer"
+                    ? `${t(transaction.type)} ${transaction.transferDirection === "send" ? t("sent") : t("received")}`
+                    : t(transaction.type as "buy" | "sell" | "transfer")}{" "}
+                  {transaction.asset}
                 </span>
               </h3>
               <p className="text-sm text-muted-foreground">
-                {hideBalance ? "•••••" : `${transaction.amount} ${t("sharesAt")} $${transaction.price.toFixed(2)}`}
+                {transaction.type === "transfer"
+                  ? hideBalance
+                    ? "•••••"
+                    : `${transaction.amount} ${transaction.asset}`
+                  : hideBalance
+                    ? "•••••"
+                    : `${transaction.amount} ${t("sharesAt")} $${transaction.price.toFixed(2)}`}
               </p>
             </div>
           </div>
@@ -174,19 +209,27 @@ export function TransactionConfirmation({ transaction, onDismiss }: TransactionC
             </h4>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-sm">{t("cash")}</span>
+                <span className="text-sm">
+                  {transaction.type === "transfer"
+                    ? transaction.transferDirection === "send"
+                      ? `${t("cash")} (${t("sent")})`
+                      : `${t("cash")} (${t("received")})`
+                    : t("cash")}
+                </span>
                 <span className={`font-medium ${budgetImpact.cashClass}`}>
                   {hideBalance ? "•••••" : `${budgetImpact.cash > 0 ? "+" : ""}$${budgetImpact.cash.toFixed(2)}`}
                 </span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">{t("investments")}</span>
-                <span className={`font-medium ${budgetImpact.investClass}`}>
-                  {hideBalance
-                    ? "•••••"
-                    : `${budgetImpact.investments > 0 ? "+" : ""}$${budgetImpact.investments.toFixed(2)}`}
-                </span>
-              </div>
+              {transaction.type !== "transfer" && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">{t("investments")}</span>
+                  <span className={`font-medium ${budgetImpact.investClass}`}>
+                    {hideBalance
+                      ? "•••••"
+                      : `${budgetImpact.investments > 0 ? "+" : ""}$${budgetImpact.investments.toFixed(2)}`}
+                  </span>
+                </div>
+              )}
               <Separator className="my-2" />
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">{t("newBalance")}</span>

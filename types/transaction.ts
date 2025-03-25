@@ -13,6 +13,7 @@ export interface Transaction {
   userId: string
   notes?: string
   fee?: number
+  transferDirection?: "send" | "receive"
 }
 
 export interface TransactionFormData {
@@ -20,6 +21,7 @@ export interface TransactionFormData {
   asset: string
   amount: number
   price: number
+  transferDirection?: "send" | "receive"
 }
 
 export interface TransactionFilters {

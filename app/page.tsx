@@ -1,67 +1,69 @@
-"use client";
+"use client"
 
-import { Suspense, useState, useEffect } from "react";
-import {
-  ArrowUpRight,
-  CreditCard,
-  DollarSign,
-  Users,
-  Download,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Suspense, useState, useEffect } from "react"
+import { ArrowUpRight, CreditCard, DollarSign, Users, Download } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserNav } from "@/components/user-nav";
-import { MainNav } from "@/components/main-nav";
-import { Overview } from "@/components/overview";
-import { RecentTransactions } from "@/components/recent-transactions";
-import { PortfolioValue } from "@/components/portfolio-value";
-import { AssetAllocation } from "@/components/asset-allocation";
-import { TransactionForm } from "@/components/transaction-form";
-import { SkeletonCard } from "@/components/skeleton-card";
-import { useSettings } from "@/context/settings-context";
-import { useTranslation } from "@/context/translation-context";
-import { useUser } from "@/context/user-context";
-import { generatePdfReport } from "@/lib/pdf-generator";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { UserNav } from "@/components/user-nav"
+import { MainNav } from "@/components/main-nav"
+import { Overview } from "@/components/overview"
+import { RecentTransactions } from "@/components/recent-transactions"
+import { PortfolioValue } from "@/components/portfolio-value"
+import { AssetAllocation } from "@/components/asset-allocation"
+import { TransactionForm } from "@/components/transaction-form"
+import { SkeletonCard } from "@/components/skeleton-card"
+import { useSettings } from "@/context/settings-context"
+import { useTranslation } from "@/context/translation-context"
+import { useUser } from "@/context/user-context"
+import { generatePdfReport } from "@/lib/pdf-generator"
+import { toast } from "@/components/ui/use-toast"
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const { hideBalance } = useSettings();
-  const { t } = useTranslation();
-  const { user, loading, refreshUser } = useUser();
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [activeTab, setActiveTab] = useState("overview")
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false)
+  const { hideBalance } = useSettings()
+  const { t } = useTranslation()
+  const { user, loading, refreshUser } = useUser()
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
-    refreshUser();
-  }, []); 
+    const loadUser = async () => {
+      try {
+        await refreshUser()
+      } catch (error) {
+        console.error("Error refreshing user data:", error)
+        // Show toast notification for error
+        toast({
+          title: "Error loading user data",
+          description: "There was a problem loading your account information. Please try again later.",
+          variant: "destructive",
+        })
+      }
+    }
+
+    loadUser()
+  }, [])
 
   const handleViewAllTransactions = () => {
-    setActiveTab("transactions");
-  };
+    setActiveTab("transactions")
+  }
 
   const handleDownloadReport = async () => {
-    setIsGeneratingPdf(true);
+    setIsGeneratingPdf(true)
     try {
-      await generatePdfReport();
+      await generatePdfReport()
     } finally {
-      setIsGeneratingPdf(false);
+      setIsGeneratingPdf(false)
     }
-  };
+  }
 
   const handleTransactionComplete = async () => {
-    setRefreshKey((prev) => prev + 1);
-    await refreshUser(); // call GET /api/user once after a transaction
-  };
+    setRefreshKey((prev) => prev + 1)
+    await refreshUser() // call GET /api/user once after a transaction
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -75,14 +77,8 @@ export default function DashboardPage() {
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {t("portfolioDashboard")}
-          </h2>
-          <Button
-            onClick={handleDownloadReport}
-            disabled={isGeneratingPdf}
-            className="w-full sm:w-auto"
-          >
+          <h2 className="text-3xl font-bold tracking-tight">{t("portfolioDashboard")}</h2>
+          <Button onClick={handleDownloadReport} disabled={isGeneratingPdf} className="w-full sm:w-auto">
             {isGeneratingPdf ? (
               <>
                 <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -96,11 +92,7 @@ export default function DashboardPage() {
             )}
           </Button>
         </div>
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-4"
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="w-full sm:w-auto flex flex-wrap">
             <TabsTrigger value="overview" className="flex-1 sm:flex-none">
               {t("overview")}
@@ -129,23 +121,15 @@ export default function DashboardPage() {
                   >
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          {t("totalBalance")}
-                        </CardTitle>
+                        <CardTitle className="text-sm font-medium">{t("totalBalance")}</CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
-                          {hideBalance
-                            ? "••••••"
-                            : `$${
-                                user?.budget.totalBalance.toFixed(2) || "0.00"
-                              }`}
+                          {hideBalance ? "••••••" : `$${user?.budget.totalBalance.toFixed(2) || "0.00"}`}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {hideBalance
-                            ? "••••••"
-                            : `+20.1% ${t("fromLastMonth")}`}
+                          {hideBalance ? "••••••" : `+20.1% ${t("fromLastMonth")}`}
                         </p>
                       </CardContent>
                     </Card>
@@ -157,23 +141,15 @@ export default function DashboardPage() {
                   >
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          {t("investments")}
-                        </CardTitle>
+                        <CardTitle className="text-sm font-medium">{t("investments")}</CardTitle>
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
-                          {hideBalance
-                            ? "••••••"
-                            : `$${
-                                user?.budget.investments.toFixed(2) || "0.00"
-                              }`}
+                          {hideBalance ? "••••••" : `$${user?.budget.investments.toFixed(2) || "0.00"}`}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {hideBalance
-                            ? "••••••"
-                            : `+4.3% ${t("fromLastMonth")}`}
+                          {hideBalance ? "••••••" : `+4.3% ${t("fromLastMonth")}`}
                         </p>
                       </CardContent>
                     </Card>
@@ -185,21 +161,15 @@ export default function DashboardPage() {
                   >
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          {t("cash")}
-                        </CardTitle>
+                        <CardTitle className="text-sm font-medium">{t("cash")}</CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
-                          {hideBalance
-                            ? "••••••"
-                            : `$${user?.budget.cash.toFixed(2) || "0.00"}`}
+                          {hideBalance ? "••••••" : `$${user?.budget.cash.toFixed(2) || "0.00"}`}
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {hideBalance
-                            ? "••••••"
-                            : `+1.2% ${t("fromLastMonth")}`}
+                          {hideBalance ? "••••••" : `+1.2% ${t("fromLastMonth")}`}
                         </p>
                       </CardContent>
                     </Card>
@@ -211,16 +181,12 @@ export default function DashboardPage() {
                   >
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          {t("activePositions")}
-                        </CardTitle>
+                        <CardTitle className="text-sm font-medium">{t("activePositions")}</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold">
-                          {hideBalance
-                            ? "••"
-                            : user?.budget.activePositions || "0"}
+                          {hideBalance ? "••" : user?.budget.activePositions || "0"}
                         </div>
                         <p className="text-xs text-muted-foreground">
                           {hideBalance ? "••••••" : `+3 ${t("sinceLastMonth")}`}
@@ -263,15 +229,10 @@ export default function DashboardPage() {
                   <Card className="col-span-3">
                     <CardHeader>
                       <CardTitle>{t("recentTransactions")}</CardTitle>
-                      <CardDescription>
-                        {t("transactionsThisMonth").replace("{count}", "10")}
-                      </CardDescription>
+                      <CardDescription>{t("transactionsThisMonth").replace("{count}", "10")}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <RecentTransactions
-                        hideValues={hideBalance}
-                        key={refreshKey}
-                      />
+                      <RecentTransactions hideValues={hideBalance} key={refreshKey} refreshTrigger={refreshKey} />
                     </CardContent>
                     <CardFooter>
                       <Button
@@ -293,9 +254,7 @@ export default function DashboardPage() {
                     <CardDescription>{t("buyOrSell")}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <TransactionForm
-                      onTransactionComplete={handleTransactionComplete}
-                    />
+                    <TransactionForm onTransactionComplete={handleTransactionComplete} />
                   </CardContent>
                 </Card>
                 <Card>
@@ -303,11 +262,7 @@ export default function DashboardPage() {
                     <CardTitle>{t("transactionHistory")}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <RecentTransactions
-                      showAll
-                      hideValues={hideBalance}
-                      key={refreshKey}
-                    />
+                    <RecentTransactions showAll hideValues={hideBalance} key={refreshKey} refreshTrigger={refreshKey} />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -329,5 +284,6 @@ export default function DashboardPage() {
         </Tabs>
       </div>
     </div>
-  );
+  )
 }
+

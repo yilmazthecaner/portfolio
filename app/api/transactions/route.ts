@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server"
 import type { Transaction, TransactionFormData as BaseTransactionFormData } from "@/types/transaction"
 
 interface TransactionFormData extends BaseTransactionFormData {
-  transferDirection?: "send" | "receive";
+  transferDirection?: "send" | "receive"
 }
 import { v4 as uuidv4 } from "uuid"
 
@@ -127,36 +127,51 @@ export async function GET(request: NextRequest) {
     // Sort by date (newest first)
     filteredTransactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
-    return NextResponse.json(filteredTransactions, {
+    // Ensure we're returning JSON with the correct content type
+    return new NextResponse(JSON.stringify(filteredTransactions), {
+      status: 200,
       headers: {
         "Content-Type": "application/json",
       },
     })
   } catch (error) {
     console.error("Error processing GET request:", error)
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500, headers: { "Content-Type": "application/json" } },
-    )
+    return new NextResponse(JSON.stringify({ message: "Internal server error" }), {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
   }
 }
 
-// POST handler for creating a new transaction
+// Update the POST handler to properly handle transfer direction
 export async function POST(request: NextRequest) {
   try {
-    const data: TransactionFormData = await request.json();
+    const data: TransactionFormData = await request.json()
 
     // Set default transferDirection if not provided for transfers
     if (data.type === "transfer" && !data.transferDirection) {
-      data.transferDirection = "send";
+      data.transferDirection = "send"
     }
 
     // Validate required fields
-    if (!data.type || !data.asset || data.amount <= 0 || data.price <= 0) {
+    if (!data.type || !data.asset || !data.amount || data.amount <= 0 || data.price <= 0) {
       return NextResponse.json(
         { message: "Missing or invalid required fields" },
         { status: 400, headers: { "Content-Type": "application/json" } },
       )
+    }
+
+    // For send transfers and buy transactions, check if user has enough funds
+    if ((data.type === "transfer" && data.transferDirection === "send") || data.type === "buy") {
+      const transactionValue = data.amount * (data.type === "transfer" ? 1 : data.price)
+      if (transactionValue > currentUser.budget.cash) {
+        return NextResponse.json(
+          { message: "Insufficient funds to complete this transaction" },
+          { status: 400, headers: { "Content-Type": "application/json" } },
+        )
+      }
     }
 
     // Calculate transaction value
@@ -173,6 +188,7 @@ export async function POST(request: NextRequest) {
       date: new Date().toISOString(),
       status: "completed",
       userId: "user1", // In a real app, this would come from authentication
+      transferDirection: data.transferDirection, // Store the direction for transfers
     }
 
     // Update user's budget based on transaction type
@@ -210,12 +226,12 @@ export async function POST(request: NextRequest) {
     } else if (data.type === "transfer") {
       // Handle transfer transactions based on transferDirection
       if (data.transferDirection === "send") {
-        currentUser.budget.cash -= value; // Sending money: deduct cash
+        currentUser.budget.cash -= value // Sending money: deduct cash
       } else if (data.transferDirection === "receive") {
-        currentUser.budget.cash += value; // Receiving money: add cash
+        currentUser.budget.cash += value // Receiving money: add cash
       } else {
         // Fallback behavior if transferDirection is not provided
-        currentUser.budget.cash += value;
+        currentUser.budget.cash += value
       }
     }
 
@@ -223,7 +239,7 @@ export async function POST(request: NextRequest) {
     currentUser.budget.totalBalance = currentUser.budget.cash + currentUser.budget.investments
 
     // Log new transaction for debugging
-    console.log("New transaction submitted:", newTransaction);
+    console.log("New transaction submitted:", newTransaction)
 
     // Add to our mock database
     transactions.unshift(newTransaction)

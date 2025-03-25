@@ -18,6 +18,7 @@ const currentUser: User = {
 // GET handler for fetching current user
 export async function GET() {
   try {
+    // Set proper content type header
     return NextResponse.json(currentUser, {
       headers: { "Content-Type": "application/json" },
     })

@@ -1,24 +1,9 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
-import { useTranslation } from "@/context/translation-context";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
+import { useState } from "react"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
+import { useTranslation } from "@/context/translation-context"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 
 const data = [
   { date: "2024-01-01", value: 10000 },
@@ -38,68 +23,52 @@ const data = [
   { date: "2025-03-05", value: 25300 },
   { date: "2025-03-20", value: 17300 },
   { date: "2025-03-24", value: 31500 },
-];
+]
 
 export function PortfolioValue({
   hideValues = false,
 }: {
-  hideValues?: boolean;
+  hideValues?: boolean
 }) {
-  const { t, language } = useTranslation();
-  const [period, setPeriod] = useState("all");
+  const { t, language } = useTranslation()
+  const [period, setPeriod] = useState("all")
 
   // filtering thresholds
-  const now = new Date();
-  const lastWeek = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() - 7
-  );
-  const lastMonth = new Date(
-    now.getFullYear(),
-    now.getMonth() - 1,
-    now.getDate()
-  );
-  const lastYear = new Date(
-    now.getFullYear() - 1,
-    now.getMonth(),
-    now.getDate()
-  );
+  const now = new Date()
+  const lastWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7)
+  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate())
+  const lastYear = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate())
 
   const filteredData =
     period === "all"
       ? data
       : period === "last_week"
-      ? data.filter((item) => new Date(item.date) >= lastWeek)
-      : period === "last_month"
-      ? data.filter((item) => new Date(item.date) >= lastMonth)
-      : data.filter((item) => new Date(item.date) >= lastYear);
+        ? data.filter((item) => new Date(item.date) >= lastWeek)
+        : period === "last_month"
+          ? data.filter((item) => new Date(item.date) >= lastMonth)
+          : data.filter((item) => new Date(item.date) >= lastYear)
 
-  const chartData = hideValues
-    ? filteredData.map((item) => ({ date: item.date, value: null }))
-    : filteredData;
+  const chartData = hideValues ? filteredData.map((item) => ({ date: item.date, value: null })) : filteredData
 
   const formatDate = (date: string) => {
-    const d = new Date(date);
+    const d = new Date(date)
     if (period === "all") {
       return language === "tr"
         ? `${d.toLocaleString("tr", { month: "long" })} ${d.getFullYear()}`
-        : `${d.toLocaleString("en", { month: "long" })} ${d.getFullYear()}`;
+        : `${d.toLocaleString("en", { month: "long" })} ${d.getFullYear()}`
     } else if (period === "last_year") {
-      return language === "tr"
-        ? d.toLocaleString("tr", { month: "long" })
-        : d.toLocaleString("en", { month: "long" });
+      return language === "tr" ? d.toLocaleString("tr", { month: "long" }) : d.toLocaleString("en", { month: "long" })
     } else if (period === "last_month") {
       return new Intl.DateTimeFormat(language === "tr" ? "tr-TR" : "en-US", {
         day: "numeric",
-      }).format(d);
+      }).format(d)
     } else if (period === "last_week") {
       return new Intl.DateTimeFormat(language === "tr" ? "tr-TR" : "en-US", {
         weekday: "short",
-      }).format(d);
+      }).format(d)
     }
-    return d.toLocaleDateString();
-  };
+    return d.toLocaleDateString()
+  }
 
   return (
     <>
@@ -129,29 +98,18 @@ export function PortfolioValue({
           }}
         >
           <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-          <XAxis
-            dataKey="date"
-            tickFormatter={formatDate}
-            stroke="currentColor"
-            className="text-muted-foreground"
-          />
+          <XAxis dataKey="date" tickFormatter={formatDate} stroke="currentColor" className="text-muted-foreground" />
           <YAxis
-            tickFormatter={(value) =>
-              hideValues ? "•••" : `$${value / 1000}k`
-            }
+            tickFormatter={(value) => (hideValues ? "•••" : `$${value / 1000}k`)}
             stroke="currentColor"
             className="text-muted-foreground"
           />
           <Tooltip
             formatter={(value: number) =>
-              hideValues
-                ? ["•••••", t("portfolioValue")]
-                : [`$${value.toLocaleString()}`, t("portfolioValue")]
+              hideValues ? ["•••••", t("portfolioValue")] : [`$${value.toLocaleString()}`, t("portfolioValue")]
             }
             labelFormatter={(label) =>
-              `${t("date")}: ${new Date(label).toLocaleDateString(
-                language === "tr" ? "tr-TR" : "en-US"
-              )}`
+              `${t("date")}: ${new Date(label).toLocaleDateString(language === "tr" ? "tr-TR" : "en-US")}`
             }
             contentStyle={{
               backgroundColor: "var(--background)",
@@ -173,5 +131,6 @@ export function PortfolioValue({
         </LineChart>
       </ResponsiveContainer>
     </>
-  );
+  )
 }
+

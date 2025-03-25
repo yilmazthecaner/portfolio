@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     // Changed: await params before using id
-    const { id } = await params;
+    const { id } = await params
     const index = transactions.findIndex((t) => t.id === id)
 
     if (index === -1) {

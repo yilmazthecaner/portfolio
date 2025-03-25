@@ -11,9 +11,11 @@ const getCurrentLanguage = () => {
 // Get translation function
 const t = (key: string): string => {
   const language = getCurrentLanguage()
-  return (translations as Record<string, Record<string, string>>)[language][key] ||
-         (translations as Record<string, Record<string, string>>).en[key] ||
-         key
+  return (
+    (translations as Record<string, Record<string, string>>)[language][key] ||
+    (translations as Record<string, Record<string, string>>).en[key] ||
+    key
+  )
 }
 
 export const generatePdfReport = async () => {

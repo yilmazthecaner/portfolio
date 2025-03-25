@@ -10,14 +10,19 @@ import { MainNav } from "@/components/main-nav"
 import { TransactionForm } from "@/components/transaction-form"
 import { TransactionHistory } from "@/components/transaction-history"
 import { useTranslation } from "@/context/translation-context"
+import { useUser } from "@/context/user-context"
 
 export default function TransactionsPage() {
   const [activeTab, setActiveTab] = useState("history")
+  const [refreshKey, setRefreshKey] = useState(0)
   const { t } = useTranslation()
+  const { user } = useUser()
 
   const handleTransactionComplete = () => {
     // Switch to history tab after completing a transaction
     setActiveTab("history")
+    // Trigger a refresh of the transaction history
+    setRefreshKey((prev) => prev + 1)
   }
 
   return (
@@ -31,8 +36,13 @@ export default function TransactionsPage() {
         </div>
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
           <h2 className="text-3xl font-bold tracking-tight">{t("transactions")}</h2>
+          <div className="flex items-center space-x-2">
+            <div className="text-sm text-muted-foreground">
+              {t("availableCash")}: <span className="font-medium">${user?.budget.cash.toFixed(2) || "0.00"}</span>
+            </div>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
@@ -49,7 +59,7 @@ export default function TransactionsPage() {
             transition={{ duration: 0.2 }}
           >
             <TabsContent value="history" className="space-y-4">
-              <TransactionHistory showFilters={true} />
+              <TransactionHistory showFilters={true} refreshTrigger={refreshKey} />
             </TabsContent>
 
             <TabsContent value="new" className="space-y-4">

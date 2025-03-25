@@ -2,7 +2,17 @@
 
 import { useEffect, useRef } from "react"
 import { motion } from "framer-motion"
-import { X, ArrowDownIcon, ArrowUpIcon, ArrowRightLeft, Hash, CreditCard, DollarSign } from "lucide-react"
+import {
+  X,
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ArrowRightLeft,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Hash,
+  CreditCard,
+  DollarSign,
+} from "lucide-react"
 
 import type { Transaction } from "@/types/transaction"
 import { useTranslation } from "@/context/translation-context"
@@ -57,14 +67,20 @@ export function TransactionDetails({ transaction, onClose }: TransactionDetailsP
     })
   }
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type: string, transferDirection?: string) => {
     switch (type) {
       case "buy":
         return <ArrowDownIcon className="h-6 w-6 text-emerald-500" />
       case "sell":
         return <ArrowUpIcon className="h-6 w-6 text-rose-500" />
       case "transfer":
-        return <ArrowRightLeft className="h-6 w-6 text-blue-500" />
+        if (transferDirection === "send") {
+          return <ArrowUpRight className="h-6 w-6 text-rose-500" />
+        } else if (transferDirection === "receive") {
+          return <ArrowDownLeft className="h-6 w-6 text-emerald-500" />
+        } else {
+          return <ArrowRightLeft className="h-6 w-6 text-blue-500" />
+        }
       default:
         return null
     }
@@ -83,6 +99,13 @@ export function TransactionDetails({ transaction, onClose }: TransactionDetailsP
     }
   }
 
+  const getTransactionTypeText = () => {
+    if (transaction.type === "transfer") {
+      return transaction.transferDirection === "send" ? t("moneySent") : t("moneyReceived")
+    }
+    return t(transaction.type as "buy" | "sell" | "transfer")
+  }
+
   return (
     <div ref={overlayRef} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <motion.div
@@ -98,7 +121,7 @@ export function TransactionDetails({ transaction, onClose }: TransactionDetailsP
               <X className="h-4 w-4" />
             </Button>
             <div className="flex items-center gap-3">
-              {getTypeIcon(transaction.type)}
+              {getTypeIcon(transaction.type, transaction.transferDirection)}
               <CardTitle>{t("transactionDetails")}</CardTitle>
             </div>
           </CardHeader>
@@ -124,6 +147,14 @@ export function TransactionDetails({ transaction, onClose }: TransactionDetailsP
               <div className="flex items-center gap-3">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
+                  <p className="text-sm text-muted-foreground">{t("type")}</p>
+                  <p className="font-medium">{getTransactionTypeText()}</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CreditCard className="h-5 w-5 text-muted-foreground" />
+                <div>
                   <p className="text-sm text-muted-foreground">{t("asset")}</p>
                   <p className="font-medium">{transaction.asset}</p>
                 </div>
@@ -134,10 +165,12 @@ export function TransactionDetails({ transaction, onClose }: TransactionDetailsP
                   <p className="text-sm text-muted-foreground">{t("amount")}</p>
                   <p className="font-medium">{hideBalance ? "•••••" : transaction.amount}</p>
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">{t("price")}</p>
-                  <p className="font-medium">{hideBalance ? "•••••" : `$${transaction.price.toFixed(2)}`}</p>
-                </div>
+                {transaction.type !== "transfer" && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">{t("price")}</p>
+                    <p className="font-medium">{hideBalance ? "•••••" : `$${transaction.price.toFixed(2)}`}</p>
+                  </div>
+                )}
               </div>
 
               <Separator />
@@ -147,7 +180,26 @@ export function TransactionDetails({ transaction, onClose }: TransactionDetailsP
                   <DollarSign className="h-5 w-5 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">{t("totalValue")}</p>
                 </div>
-                <p className="font-bold text-lg">{hideBalance ? "•••••" : `$${transaction.value.toFixed(2)}`}</p>
+                <p
+                  className={`font-bold text-lg ${
+                    transaction.type === "transfer"
+                      ? transaction.transferDirection === "send"
+                        ? "text-rose-500"
+                        : "text-emerald-500"
+                      : transaction.type === "buy"
+                        ? "text-rose-500"
+                        : "text-emerald-500"
+                  }`}
+                >
+                  {hideBalance
+                    ? "•••••"
+                    : `${
+                        (transaction.type === "transfer" && transaction.transferDirection === "receive") ||
+                        transaction.type === "sell"
+                          ? "+"
+                          : "-"
+                      }$${transaction.value.toFixed(2)}`}
+                </p>
               </div>
 
               {transaction.fee && (

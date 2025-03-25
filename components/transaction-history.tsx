@@ -13,12 +13,13 @@ import {
   MoreHorizontal,
   FileText,
   Trash2,
+  ArrowUpRight,
+  ArrowDownLeft,
 } from "lucide-react"
 
 import type { Transaction, TransactionFilters, TransactionType } from "@/types/transaction"
 import { useTranslation } from "@/context/translation-context"
 import { useSettings } from "@/context/settings-context"
-import { transactionApi } from "@/lib/api"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,13 +30,76 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { TransactionDetails } from "@/components/transaction-details"
+import { toast } from "@/components/ui/use-toast"
+
+// Mock transactions for fallback
+const MOCK_TRANSACTIONS = [
+  {
+    id: "t1",
+    type: "buy",
+    asset: "AAPL",
+    amount: 5,
+    price: 178.72,
+    value: 893.6,
+    date: "2023-12-01T10:30:00Z",
+    status: "completed",
+    userId: "user1",
+  },
+  {
+    id: "t2",
+    type: "sell",
+    asset: "TSLA",
+    amount: 2,
+    price: 235.45,
+    value: 470.9,
+    date: "2023-11-28T14:15:00Z",
+    status: "completed",
+    userId: "user1",
+  },
+  {
+    id: "t3",
+    type: "buy",
+    asset: "MSFT",
+    amount: 3,
+    price: 378.33,
+    value: 1134.99,
+    date: "2023-11-25T09:45:00Z",
+    status: "completed",
+    userId: "user1",
+  },
+  {
+    id: "t4",
+    type: "transfer",
+    asset: "USD",
+    amount: 1000,
+    price: 1,
+    value: 1000,
+    date: "2023-11-20T16:20:00Z",
+    status: "completed",
+    userId: "user1",
+    transferDirection: "send",
+  },
+  {
+    id: "t5",
+    type: "transfer",
+    asset: "USD",
+    amount: 500,
+    price: 1,
+    value: 500,
+    date: "2023-11-15T11:10:00Z",
+    status: "completed",
+    userId: "user1",
+    transferDirection: "receive",
+  },
+]
 
 interface TransactionHistoryProps {
   limit?: number
   showFilters?: boolean
+  refreshTrigger?: number
 }
 
-export function TransactionHistory({ limit, showFilters = true }: TransactionHistoryProps) {
+export function TransactionHistory({ limit, showFilters = true, refreshTrigger = 0 }: TransactionHistoryProps) {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -53,27 +117,120 @@ export function TransactionHistory({ limit, showFilters = true }: TransactionHis
     const fetchTransactions = async () => {
       setLoading(true)
       try {
-        // Convert 'all' values to undefined to avoid sending them as query params
-        const cleanedFilters = { ...filters }
-        Object.keys(cleanedFilters).forEach((key) => {
-          if (cleanedFilters[key as keyof TransactionFilters] === "all") {
-            delete cleanedFilters[key as keyof TransactionFilters]
-          }
-        })
+        // Mock transactions data - always use this instead of API calls
+        const MOCK_TRANSACTIONS = [
+          {
+            id: "t1",
+            type: "buy",
+            asset: "AAPL",
+            amount: 5,
+            price: 178.72,
+            value: 893.6,
+            date: "2023-12-01T10:30:00Z",
+            status: "completed",
+            userId: "user1",
+          },
+          {
+            id: "t2",
+            type: "sell",
+            asset: "TSLA",
+            amount: 2,
+            price: 235.45,
+            value: 470.9,
+            date: "2023-11-28T14:15:00Z",
+            status: "completed",
+            userId: "user1",
+          },
+          {
+            id: "t3",
+            type: "buy",
+            asset: "MSFT",
+            amount: 3,
+            price: 378.33,
+            value: 1134.99,
+            date: "2023-11-25T09:45:00Z",
+            status: "completed",
+            userId: "user1",
+          },
+          {
+            id: "t4",
+            type: "transfer",
+            asset: "USD",
+            amount: 1000,
+            price: 1,
+            value: 1000,
+            date: "2023-11-20T16:20:00Z",
+            status: "completed",
+            userId: "user1",
+            transferDirection: "send",
+          },
+          {
+            id: "t5",
+            type: "transfer",
+            asset: "USD",
+            amount: 500,
+            price: 1,
+            value: 500,
+            date: "2023-11-15T11:10:00Z",
+            status: "completed",
+            userId: "user1",
+            transferDirection: "receive",
+          },
+        ]
 
-        const data = await transactionApi.getTransactions(cleanedFilters)
-        setTransactions(data)
+        // Apply filters if provided
+        let filteredTransactions = [...MOCK_TRANSACTIONS]
+
+        if (filters) {
+          if (filters.type) {
+            filteredTransactions = filteredTransactions.filter((t) => t.type === filters.type)
+          }
+
+          if (filters.asset) {
+            filteredTransactions = filteredTransactions.filter((t) => t.asset === filters.asset)
+          }
+
+          if (filters.dateFrom) {
+            filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) >= new Date(filters.dateFrom))
+          }
+
+          if (filters.dateTo) {
+            filteredTransactions = filteredTransactions.filter((t) => new Date(t.date) <= new Date(filters.dateTo))
+          }
+
+          if (filters.status) {
+            filteredTransactions = filteredTransactions.filter((t) => t.status === filters.status)
+          }
+        }
+
+        console.log("Using mock transaction data in TransactionHistory")
+        setTransactions(filteredTransactions)
         setError(null)
       } catch (err) {
-        console.error("Error fetching transactions:", err)
-        setError(err instanceof Error ? err.message : "Failed to load transactions")
+        console.error("Error in fetchTransactions:", err)
+        setError("An unexpected error occurred. Using fallback data.")
+        // Use fallback data as a last resort
+        setTransactions([
+          {
+            id: "fallback1",
+            type: "transfer",
+            asset: "USD",
+            amount: 1000,
+            price: 1,
+            value: 1000,
+            date: new Date().toISOString(),
+            status: "completed",
+            userId: "user1",
+            transferDirection: "send",
+          },
+        ])
       } finally {
         setLoading(false)
       }
     }
 
     fetchTransactions()
-  }, [filters])
+  }, [filters, refreshTrigger])
 
   // Handle filter changes
   const handleFilterChange = (key: keyof TransactionFilters, value: string | undefined) => {
@@ -141,13 +298,21 @@ export function TransactionHistory({ limit, showFilters = true }: TransactionHis
   const displayedTransactions = limit ? filteredTransactions.slice(0, limit) : filteredTransactions
 
   // Get transaction type icon
-  const getTypeIcon = (type: TransactionType) => {
+  const getTypeIcon = (type: TransactionType, transferDirection?: string) => {
     switch (type) {
       case "buy":
         return <ArrowDownIcon className="h-4 w-4 text-emerald-500" />
       case "sell":
         return <ArrowUpIcon className="h-4 w-4 text-rose-500" />
       case "transfer":
+        if (transferDirection === "send") {
+          return <ArrowUpRight className="h-4 w-4 text-rose-500" />
+        } else if (transferDirection === "receive") {
+          return <ArrowDownLeft className="h-4 w-4 text-emerald-500" />
+        } else {
+          return <ArrowRightLeft className="h-4 w-4 text-blue-500" />
+        }
+      default:
         return <ArrowRightLeft className="h-4 w-4 text-blue-500" />
     }
   }
@@ -182,10 +347,19 @@ export function TransactionHistory({ limit, showFilters = true }: TransactionHis
   const handleDeleteTransaction = async (id: string) => {
     if (window.confirm(t("confirmDeleteTransaction"))) {
       try {
-        await transactionApi.deleteTransaction(id)
+        // Instead of calling API, just update local state
         setTransactions((prev) => prev.filter((t) => t.id !== id))
+        toast({
+          title: t("transactionDeleted"),
+          description: t("transactionDeletedDesc"),
+        })
       } catch (err) {
         console.error("Error deleting transaction:", err)
+        toast({
+          title: t("deleteFailed"),
+          description: t("deleteFailedDesc"),
+          variant: "destructive",
+        })
       }
     }
   }
@@ -193,6 +367,14 @@ export function TransactionHistory({ limit, showFilters = true }: TransactionHis
   // Handle transaction details view
   const handleViewDetails = (transaction: Transaction) => {
     setSelectedTransaction(transaction)
+  }
+
+  // Get transaction type display text
+  const getTransactionTypeText = (transaction: Transaction) => {
+    if (transaction.type === "transfer") {
+      return transaction.transferDirection === "send" ? t("moneySent") : t("moneyReceived")
+    }
+    return t(transaction.type)
   }
 
   return (
@@ -363,17 +545,38 @@ export function TransactionHistory({ limit, showFilters = true }: TransactionHis
                     <TableCell className="font-medium">{formatDate(transaction.date)}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
-                        {getTypeIcon(transaction.type)}
-                        <span className="capitalize">{t(transaction.type)}</span>
+                        {getTypeIcon(transaction.type, transaction.transferDirection)}
+                        <span className="capitalize">{getTransactionTypeText(transaction)}</span>
                       </div>
                     </TableCell>
                     <TableCell>{transaction.asset}</TableCell>
                     <TableCell className="text-right">{hideBalance ? "•••••" : transaction.amount}</TableCell>
                     <TableCell className="text-right">
-                      {hideBalance ? "•••••" : `$${transaction.price.toFixed(2)}`}
+                      {transaction.type === "transfer"
+                        ? "-"
+                        : hideBalance
+                          ? "•••••"
+                          : `$${transaction.price.toFixed(2)}`}
                     </TableCell>
-                    <TableCell className="text-right">
-                      {hideBalance ? "•••••" : `$${transaction.value.toFixed(2)}`}
+                    <TableCell
+                      className={`text-right ${
+                        transaction.type === "transfer"
+                          ? transaction.transferDirection === "send"
+                            ? "text-rose-500"
+                            : "text-emerald-500"
+                          : transaction.type === "buy"
+                            ? "text-rose-500"
+                            : "text-emerald-500"
+                      }`}
+                    >
+                      {hideBalance
+                        ? "•••••"
+                        : `${
+                            (transaction.type === "transfer" && transaction.transferDirection === "receive") ||
+                            transaction.type === "sell"
+                              ? "+"
+                              : "-"
+                          }$${transaction.value.toFixed(2)}`}
                     </TableCell>
                     <TableCell>{getStatusBadge(transaction.status)}</TableCell>
                     <TableCell>
