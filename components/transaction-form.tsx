@@ -172,12 +172,12 @@ export function TransactionForm({
                 "from"
               )} ${t("yourAccount")}. ${t("newBalance")}: $${newCash.toFixed(
                 2
-              )}`
+              )}. ${t("transactionHistoryWillUpdate")}`
             : `${t("moneyReceived")}: ${values.amount} ${values.asset} ${t(
                 "to"
               )} ${t("yourAccount")}. ${t("newBalance")}: $${newCash.toFixed(
                 2
-              )}`,
+              )}. ${t("transactionHistoryWillUpdate")}`,
           variant: "default",
         });
       } else {
@@ -185,7 +185,9 @@ export function TransactionForm({
           title: t("transactionSubmitted"),
           description: `${values.type === "buy" ? t("bought") : t("sold")} ${
             values.amount
-          } ${values.asset} at $${submitValues.price}`,
+          } ${values.asset} at $${submitValues.price}. ${t(
+            "transactionHistoryWillUpdate"
+          )}`,
           variant: "default",
         });
       }

@@ -76,6 +76,7 @@ export const translations = {
     transactionDeletedDesc: "İşlem başarıyla silindi.",
     deleteFailed: "Silme başarısız",
     deleteFailedDesc: "İşlem silinirken bir hata oluştu.",
+    transactionHistoryWillUpdate: "Bu işlem artık işlemlerinizde ve geçmişinizde görünecektir.",
 
     // Transaction validation and errors
     insufficientFunds: "Yetersiz Bakiye",
@@ -174,7 +175,6 @@ export const translations = {
 
     // Chart labels
     month: "Ay",
-    date: "Tarih",
 
     // Time periods
     fromLastMonth: "geçen aydan",
@@ -262,6 +262,7 @@ export const translations = {
     transactionDeletedDesc: "The transaction was successfully deleted.",
     deleteFailed: "Delete failed",
     deleteFailedDesc: "There was an error deleting the transaction.",
+    transactionHistoryWillUpdate: "This transaction will now appear in your transactions and history.",
 
     // Transaction validation and errors
     insufficientFunds: "Insufficient Funds",
@@ -360,8 +361,6 @@ export const translations = {
 
     // Chart labels
     month: "Month",
-    date: "Date",
-
     // Time periods
     fromLastMonth: "from last month",
     sinceLastMonth: "since last month",
