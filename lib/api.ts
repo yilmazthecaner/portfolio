@@ -128,7 +128,6 @@ export const transactionApi = {
       },
     ]
 
-
     // Apply filters if provided
     let filteredTransactions = [...MOCK_TRANSACTIONS]
 
@@ -142,11 +141,15 @@ export const transactionApi = {
       }
 
       if (filters.dateFrom) {
-        filteredTransactions = filteredTransactions.filter((t) => filters.dateFrom && new Date(t.date) >= new Date(filters.dateFrom))
+        filteredTransactions = filteredTransactions.filter(
+          (t) => filters.dateFrom && new Date(t.date) >= new Date(filters.dateFrom),
+        )
       }
 
       if (filters.dateTo) {
-        filteredTransactions = filteredTransactions.filter((t) => filters.dateTo && new Date(t.date) <= new Date(filters.dateTo))
+        filteredTransactions = filteredTransactions.filter(
+          (t) => filters.dateTo && new Date(t.date) <= new Date(filters.dateTo),
+        )
       }
 
       if (filters.status) {

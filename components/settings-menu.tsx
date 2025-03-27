@@ -1,85 +1,64 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import {
-  X,
-  Moon,
-  Sun,
-  Bell,
-  Shield,
-  Eye,
-  EyeOff,
-  Minimize,
-  Maximize,
-} from "lucide-react";
+import { useEffect, useRef, useState } from "react"
+import { motion } from "framer-motion"
+import { X, Moon, Sun, Bell, Shield, Eye, EyeOff, Minimize, Maximize } from "lucide-react"
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useTheme } from "@/components/theme-provider";
-import { useSettings } from "@/context/settings-context";
-import { useTranslation } from "@/context/translation-context";
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { useTheme } from "@/components/theme-provider"
+import { useSettings } from "@/context/settings-context"
+import { useTranslation } from "@/context/translation-context"
 
 interface SettingsMenuProps {
-  onClose: () => void;
+  onClose: () => void
 }
 
 export function SettingsMenu({ onClose }: SettingsMenuProps) {
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
-  const { hideBalance, setHideBalance, compactMode, setCompactMode } =
-    useSettings();
-  const { language, setLanguage, t } = useTranslation();
-  const [selectedLang, setSelectedLang] = useState<"tr" | "en">(language);
-  const [pendingTheme, setPendingTheme] = useState(theme);
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const { theme, setTheme } = useTheme()
+  const { hideBalance, setHideBalance, compactMode, setCompactMode } = useSettings()
+  const { language, setLanguage, t } = useTranslation()
+  const [selectedLang, setSelectedLang] = useState<"tr" | "en">(language)
+  const [pendingTheme, setPendingTheme] = useState(theme)
 
   const handleSave = async () => {
     try {
-      setTheme(pendingTheme);
-      setLanguage(selectedLang);
-      onClose();
+      setTheme(pendingTheme)
+      setLanguage(selectedLang)
+      onClose()
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Error updating profile:", error)
     }
-  };
+  }
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+      if (e.key === "Escape") onClose()
+    }
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (overlayRef.current === e.target) onClose();
-    };
+      if (overlayRef.current === e.target) onClose()
+    }
 
-    document.addEventListener("keydown", handleEscape);
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape)
+    document.addEventListener("mousedown", handleClickOutside)
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden"
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.body.style.overflow = "auto";
-    };
-  }, [onClose]);
+      document.removeEventListener("keydown", handleEscape)
+      document.removeEventListener("mousedown", handleClickOutside)
+      document.body.style.overflow = "auto"
+    }
+  }, [onClose])
 
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-    >
+    <div ref={overlayRef} className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -89,12 +68,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
       >
         <Card className="shadow-lg border-border">
           <CardHeader className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-2"
-              onClick={onClose}
-            >
+            <Button variant="ghost" size="icon" className="absolute right-2 top-2" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
             <CardTitle>{t("settings")}</CardTitle>
@@ -105,9 +79,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
               <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="appearance">{t("appearance")}</TabsTrigger>
                 <TabsTrigger value="language">{t("language")}</TabsTrigger>
-                <TabsTrigger value="notifications">
-                  {t("notifications")}
-                </TabsTrigger>
+                <TabsTrigger value="notifications">{t("notifications")}</TabsTrigger>
                 <TabsTrigger value="security">{t("security")}</TabsTrigger>
               </TabsList>
 
@@ -117,9 +89,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                     <h3 className="font-medium">{t("theme")}</h3>
                     <div className="grid grid-cols-3 gap-2">
                       <Button
-                        variant={
-                          pendingTheme === "light" ? "default" : "outline"
-                        }
+                        variant={pendingTheme === "light" ? "default" : "outline"}
                         className="justify-start"
                         onClick={() => setPendingTheme("light")}
                       >
@@ -127,9 +97,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                         {t("light")}
                       </Button>
                       <Button
-                        variant={
-                          pendingTheme === "dark" ? "default" : "outline"
-                        }
+                        variant={pendingTheme === "dark" ? "default" : "outline"}
                         className="justify-start"
                         onClick={() => setPendingTheme("dark")}
                       >
@@ -137,9 +105,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                         {t("dark")}
                       </Button>
                       <Button
-                        variant={
-                          pendingTheme === "system" ? "default" : "outline"
-                        }
+                        variant={pendingTheme === "system" ? "default" : "outline"}
                         className="justify-start"
                         onClick={() => setPendingTheme("system")}
                       >
@@ -152,22 +118,12 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
-                        {compactMode ? (
-                          <Minimize className="h-4 w-4" />
-                        ) : (
-                          <Maximize className="h-4 w-4" />
-                        )}
+                        {compactMode ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                         <Label htmlFor="compact-view">{t("compactView")}</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {t("reduceSpacing")}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t("reduceSpacing")}</p>
                     </div>
-                    <Switch
-                      id="compact-view"
-                      checked={compactMode}
-                      onCheckedChange={setCompactMode}
-                    />
+                    <Switch id="compact-view" checked={compactMode} onCheckedChange={setCompactMode} />
                   </div>
                 </div>
               </TabsContent>
@@ -179,8 +135,8 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                     <RadioGroup
                       defaultValue={language}
                       onValueChange={(value) => {
-                        localStorage.setItem("preferredLanguage", value);
-                        setSelectedLang(value as "tr" | "en");
+                        localStorage.setItem("preferredLanguage", value)
+                        setSelectedLang(value as "tr" | "en")
                       }}
                       className="space-y-2"
                     >
@@ -211,9 +167,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                         <Bell className="h-4 w-4" />
                         <Label htmlFor="price-alerts">{t("priceAlerts")}</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {t("priceAlertsDesc")}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t("priceAlertsDesc")}</p>
                     </div>
                     <Switch id="price-alerts" defaultChecked />
                   </div>
@@ -222,13 +176,9 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
                         <Bell className="h-4 w-4" />
-                        <Label htmlFor="transaction-alerts">
-                          {t("transactionAlerts")}
-                        </Label>
+                        <Label htmlFor="transaction-alerts">{t("transactionAlerts")}</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {t("transactionAlertsDesc")}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t("transactionAlertsDesc")}</p>
                     </div>
                     <Switch id="transaction-alerts" defaultChecked />
                   </div>
@@ -239,9 +189,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                         <Bell className="h-4 w-4" />
                         <Label htmlFor="news-alerts">{t("newsAlerts")}</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {t("newsAlertsDesc")}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t("newsAlertsDesc")}</p>
                     </div>
                     <Switch id="news-alerts" />
                   </div>
@@ -256,9 +204,7 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                         <Shield className="h-4 w-4" />
                         <Label htmlFor="two-factor">{t("twoFactor")}</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {t("twoFactorDesc")}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t("twoFactorDesc")}</p>
                     </div>
                     <Switch id="two-factor" />
                   </div>
@@ -266,22 +212,12 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-2">
-                        {hideBalance ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {hideBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                         <Label htmlFor="hide-balance">{t("hideBalance")}</Label>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {t("hideBalanceDesc")}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{t("hideBalanceDesc")}</p>
                     </div>
-                    <Switch
-                      id="hide-balance"
-                      checked={hideBalance}
-                      onCheckedChange={setHideBalance}
-                    />
+                    <Switch id="hide-balance" checked={hideBalance} onCheckedChange={setHideBalance} />
                   </div>
                 </div>
               </TabsContent>
@@ -296,5 +232,6 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
         </Card>
       </motion.div>
     </div>
-  );
+  )
 }
+

@@ -39,11 +39,11 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
       label: t("transactions"),
       active: pathname === "/transactions",
     },
-    // {
-    //   href: "/markets",
-    //   label: t("markets"),
-    //   active: pathname === "/markets",
-    // },
+    {
+      href: "/markets",
+      label: t("markets"),
+      active: pathname === "/markets",
+    },
   ]
 
   if (!isMounted) {

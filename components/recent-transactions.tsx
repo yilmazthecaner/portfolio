@@ -1,18 +1,12 @@
-"use client";
+"use client"
 
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  ArrowRightLeft,
-  ArrowUpRight,
-  ArrowDownLeft,
-} from "lucide-react";
-import { useTranslation } from "@/context/translation-context";
-import { Skeleton } from "@/components/ui/skeleton";
-import { TransactionDetails } from "@/components/transaction-details";
+import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ArrowDownIcon, ArrowUpIcon, ArrowRightLeft, ArrowUpRight, ArrowDownLeft } from "lucide-react"
+import { useTranslation } from "@/context/translation-context"
+import { Skeleton } from "@/components/ui/skeleton"
+import { TransactionDetails } from "@/components/transaction-details"
 
 // Mock transactions for fallback
 const MOCK_TRANSACTIONS: Transaction[] = [
@@ -73,19 +67,19 @@ const MOCK_TRANSACTIONS: Transaction[] = [
     userId: "user1",
     transferDirection: "receive",
   },
-];
+]
 
 interface Transaction {
-  id: string;
-  type: "buy" | "sell" | "transfer";
-  asset: string;
-  amount: number;
-  price: number;
-  date: string;
-  status: "completed" | "pending" | "failed";
-  transferDirection?: "send" | "receive";
-  value: number;
-  userId: string;
+  id: string
+  type: "buy" | "sell" | "transfer"
+  asset: string
+  amount: number
+  price: number
+  date: string
+  status: "completed" | "pending" | "failed"
+  transferDirection?: "send" | "receive"
+  value: number
+  userId: string
 }
 
 export function RecentTransactions({
@@ -93,39 +87,38 @@ export function RecentTransactions({
   hideValues = false,
   refreshTrigger = 0,
 }: {
-  showAll?: boolean;
-  hideValues?: boolean;
-  refreshTrigger?: number;
+  showAll?: boolean
+  hideValues?: boolean
+  refreshTrigger?: number
 }) {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
-  const { t, language } = useTranslation();
+  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+  const { t, language } = useTranslation()
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
         // Replace hard-coded mock data with an API call:
-        const response = await fetch("/api/transactions");
-        let data = [];
+        const response = await fetch("/api/transactions")
+        let data = []
         if (response.ok) {
-          data = await response.json();
+          data = await response.json()
         } else {
-          throw new Error("Failed to fetch transactions");
+          throw new Error("Failed to fetch transactions")
         }
         // Check for a newly created transaction stored in localStorage
-        const stored = localStorage.getItem("latestTransaction");
+        const stored = localStorage.getItem("latestTransaction")
         if (stored) {
-          const latest = JSON.parse(stored);
+          const latest = JSON.parse(stored)
           if (!data.find((tx: Transaction) => tx.id === latest.id)) {
-            data = [latest, ...data];
+            data = [latest, ...data]
           }
         }
-        setTransactions(data);
+        setTransactions(data)
       } catch (error) {
-        console.error("Error in fetchTransactions:", error);
+        console.error("Error in fetchTransactions:", error)
         // Use fallback data as a last resort
         setTransactions([
           {
@@ -140,85 +133,73 @@ export function RecentTransactions({
             userId: "user1",
             transferDirection: "send",
           },
-        ]);
+        ])
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-    fetchTransactions();
-  }, [refreshTrigger]);
+    }
+    fetchTransactions()
+  }, [refreshTrigger])
 
-  const displayedTransactions = showAll
-    ? transactions
-    : transactions.slice(0, 5);
+  const displayedTransactions = showAll ? transactions : transactions.slice(0, 5)
 
   const getTransactionIcon = (transaction: Transaction) => {
     if (transaction.type === "buy") {
-      return <ArrowDownIcon className="h-4 w-4 text-emerald-500" />;
+      return <ArrowDownIcon className="h-4 w-4 text-emerald-500" />
     } else if (transaction.type === "sell") {
-      return <ArrowUpIcon className="h-4 w-4 text-rose-500" />;
+      return <ArrowUpIcon className="h-4 w-4 text-rose-500" />
     } else if (transaction.type === "transfer") {
       if (transaction.transferDirection === "send") {
-        return <ArrowUpRight className="h-4 w-4 text-rose-500" />;
+        return <ArrowUpRight className="h-4 w-4 text-rose-500" />
       } else if (transaction.transferDirection === "receive") {
-        return <ArrowDownLeft className="h-4 w-4 text-emerald-500" />;
+        return <ArrowDownLeft className="h-4 w-4 text-emerald-500" />
       } else {
-        return <ArrowRightLeft className="h-4 w-4 text-blue-500" />;
+        return <ArrowRightLeft className="h-4 w-4 text-blue-500" />
       }
     }
-    return <ArrowRightLeft className="h-4 w-4 text-blue-500" />;
-  };
+    return <ArrowRightLeft className="h-4 w-4 text-blue-500" />
+  }
 
   const getTransactionDescription = (transaction: Transaction) => {
     if (transaction.type === "buy") {
-      return `${t("bought")} ${transaction.asset}`;
+      return `${t("bought")} ${transaction.asset}`
     } else if (transaction.type === "sell") {
-      return `${t("sold")} ${transaction.asset}`;
+      return `${t("sold")} ${transaction.asset}`
     } else if (transaction.type === "transfer") {
       if (transaction.transferDirection === "send") {
-        return `${t("moneySent")} ${transaction.asset}`;
+        return `${t("moneySent")} ${transaction.asset}`
       } else if (transaction.transferDirection === "receive") {
-        return `${t("moneyReceived")} ${transaction.asset}`;
+        return `${t("moneyReceived")} ${transaction.asset}`
       } else {
-        return `${t("transferred")} ${transaction.asset}`;
+        return `${t("transferred")} ${transaction.asset}`
       }
     }
-    return `${t("transferred")} ${transaction.asset}`;
-  };
+    return `${t("transferred")} ${transaction.asset}`
+  }
 
   const getTransactionValueClass = (transaction: Transaction) => {
-    if (
-      transaction.type === "buy" ||
-      (transaction.type === "transfer" &&
-        transaction.transferDirection === "send")
-    ) {
-      return "text-rose-500";
+    if (transaction.type === "buy" || (transaction.type === "transfer" && transaction.transferDirection === "send")) {
+      return "text-rose-500"
     } else if (
       transaction.type === "sell" ||
-      (transaction.type === "transfer" &&
-        transaction.transferDirection === "receive")
+      (transaction.type === "transfer" && transaction.transferDirection === "receive")
     ) {
-      return "text-emerald-500";
+      return "text-emerald-500"
     }
-    return "";
-  };
+    return ""
+  }
 
   const getTransactionValuePrefix = (transaction: Transaction) => {
-    if (
-      transaction.type === "buy" ||
-      (transaction.type === "transfer" &&
-        transaction.transferDirection === "send")
-    ) {
-      return "-";
+    if (transaction.type === "buy" || (transaction.type === "transfer" && transaction.transferDirection === "send")) {
+      return "-"
     } else if (
       transaction.type === "sell" ||
-      (transaction.type === "transfer" &&
-        transaction.transferDirection === "receive")
+      (transaction.type === "transfer" && transaction.transferDirection === "receive")
     ) {
-      return "+";
+      return "+"
     }
-    return "";
-  };
+    return ""
+  }
 
   if (loading) {
     return (
@@ -237,15 +218,13 @@ export function RecentTransactions({
           </div>
         ))}
       </div>
-    );
+    )
   }
 
   return (
     <div className="space-y-4">
       {displayedTransactions.length === 0 ? (
-        <p className="text-center text-muted-foreground py-4">
-          {t("noTransactionsFound")}
-        </p>
+        <p className="text-center text-muted-foreground py-4">{t("noTransactionsFound")}</p>
       ) : (
         displayedTransactions.map((transaction, index) => (
           <motion.div
@@ -258,47 +237,29 @@ export function RecentTransactions({
             onClick={() => setSelectedTransaction(transaction)}
           >
             <Avatar className="h-9 w-9 mr-3">
-              <AvatarImage
-                src={`/placeholder.svg?height=36&width=36`}
-                alt={transaction.asset}
-              />
-              <AvatarFallback className="bg-primary/10">
-                {getTransactionIcon(transaction)}
-              </AvatarFallback>
+              <AvatarImage src={`/placeholder.svg?height=36&width=36`} alt={transaction.asset} />
+              <AvatarFallback className="bg-primary/10">{getTransactionIcon(transaction)}</AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {getTransactionDescription(transaction)}
-              </p>
+              <p className="text-sm font-medium leading-none">{getTransactionDescription(transaction)}</p>
               <p className="text-xs text-muted-foreground">
-                {new Date(transaction.date).toLocaleDateString(
-                  language === "tr" ? "tr-TR" : "en-US",
-                  {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  }
-                )}
+                {new Date(transaction.date).toLocaleDateString(language === "tr" ? "tr-TR" : "en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </p>
             </div>
             <div className="text-right">
-              <p
-                className={`text-sm font-medium leading-none ${getTransactionValueClass(
-                  transaction
-                )}`}
-              >
+              <p className={`text-sm font-medium leading-none ${getTransactionValueClass(transaction)}`}>
                 {getTransactionValuePrefix(transaction)}
                 {hideValues ? "•••••" : `$${transaction.value.toFixed(2)}`}
               </p>
               <p className="text-xs text-muted-foreground">
                 {hideValues ? "•••" : transaction.amount}{" "}
-                {transaction.type !== "transfer"
-                  ? hideValues
-                    ? "@ •••"
-                    : `@ $${transaction.price}`
-                  : ""}
+                {transaction.type !== "transfer" ? (hideValues ? "@ •••" : `@ $${transaction.price}`) : ""}
               </p>
             </div>
           </motion.div>
@@ -306,11 +267,9 @@ export function RecentTransactions({
       )}
 
       {selectedTransaction && (
-        <TransactionDetails
-          transaction={selectedTransaction}
-          onClose={() => setSelectedTransaction(null)}
-        />
+        <TransactionDetails transaction={selectedTransaction} onClose={() => setSelectedTransaction(null)} />
       )}
     </div>
-  );
+  )
 }
+
