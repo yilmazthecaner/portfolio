@@ -178,9 +178,10 @@ export function SettingsMenu({ onClose }: SettingsMenuProps) {
                     <h3 className="font-medium">{t("selectLanguage")}</h3>
                     <RadioGroup
                       defaultValue={language}
-                      onValueChange={(value) =>
-                        setSelectedLang(value as "tr" | "en")
-                      }
+                      onValueChange={(value) => {
+                        localStorage.setItem("preferredLanguage", value);
+                        setSelectedLang(value as "tr" | "en");
+                      }}
                       className="space-y-2"
                     >
                       <div className="flex items-center space-x-2">

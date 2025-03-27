@@ -5,7 +5,7 @@ import { translations } from "@/lib/translations"
 // Get the current language from localStorage
 const getCurrentLanguage = () => {
   if (typeof window === "undefined") return "tr"
-  return (localStorage.getItem("language") as "tr" | "en") || "tr"
+  return (localStorage.getItem("preferredLanguage") as "tr" | "en") || "tr"
 }
 
 // Get translation function
@@ -106,6 +106,6 @@ export const generatePdfReport = async () => {
   }
 
   // Save the PDF
-  doc.save(`${userName} portfolio report ${currentDate}.pdf`)
+  doc.save(`${userName} ${t("portfolioReport")} ${currentDate}.pdf`)
 }
 
