@@ -29,11 +29,11 @@ export function MainNav({ className, ...props }: React.HTMLAttributes<HTMLElemen
       label: t("dashboard"),
       active: pathname === "/",
     },
-    // {
-    //   href: "/portfolio",
-    //   label: t("portfolio"),
-    //   active: pathname === "/portfolio",
-    // },
+    {
+      href: "/portfolio-list",
+      label: t("portfolioList"),
+      active: pathname === "/portfolio-list",
+    },
     {
       href: "/transactions",
       label: t("transactions"),
