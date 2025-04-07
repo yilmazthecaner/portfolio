@@ -322,6 +322,9 @@ export const translations = {
     sector: "Sektör",
     geographic: "Coğrafi",
     thematic: "Tematik",
+    searchSymbol: "Sembol ara...",
+    noSymbolsFound: "Sembol bulunamadı",
+    selectSymbol: "Sembol seç",
   },
   en: {
     // Navigation
@@ -647,6 +650,9 @@ export const translations = {
     sector: "Sector",
     geographic: "Geographic",
     thematic: "Thematic",
+    searchSymbol: "Search symbol...",
+    noSymbolsFound: "No symbols found",
+    selectSymbol: "Select symbol",
   },
 }
 

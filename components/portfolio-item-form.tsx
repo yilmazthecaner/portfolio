@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { AssetSymbolSelector } from "@/components/asset-symbol-selector"
 
 interface PortfolioItemFormProps {
   onClose: () => void
@@ -85,14 +86,47 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
 
     // Handle numeric inputs
     if (name === "totalValue" || name === "returnRate") {
+      // Remove leading zeros and handle decimal values properly
+      let cleanedValue = value
+
+      // If it starts with 0 and has more digits, remove the leading zero
+      // unless it's a decimal (0.xx)
+      if (value.length > 1 && value.startsWith("0") && value.charAt(1) !== ".") {
+        cleanedValue = value.replace(/^0+/, "")
+      }
+
+      // If it's just "0", keep it
+      if (cleanedValue === "") {
+        cleanedValue = "0"
+      }
+
       setFormData((prev) => ({
         ...prev,
-        [name]: Number.parseFloat(value) || 0,
+        [name]: Number.parseFloat(cleanedValue) || 0,
       }))
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
+      }))
+    }
+  }
+
+  // Add focus handlers for numeric inputs to improve UX
+  // Add these functions after the handleChange function
+  const handleFocusNumericInput = (e: React.FocusEvent<HTMLInputElement>) => {
+    // When focusing on a numeric input with value 0, clear it for easier entry
+    if (e.target.value === "0") {
+      e.target.value = ""
+    }
+  }
+
+  const handleBlurNumericInput = (e: React.FocusEvent<HTMLInputElement>, fieldName: string) => {
+    // When leaving the field, if it's empty, set it back to 0
+    if (e.target.value === "") {
+      setFormData((prev) => ({
+        ...prev,
+        [fieldName]: 0,
       }))
     }
   }
@@ -105,21 +139,21 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
     }))
   }
 
-  // Handle asset changes
-  const handleAssetChange = (index: number, field: "symbol" | "allocation", value: any) => {
-    const newAssets = [...formData.assets]
-
-    if (field === "allocation") {
-      newAssets[index][field] = Number.parseFloat(value) || 0
-    } else {
-      newAssets[index][field] = value
+    // Handle asset changes
+    const handleAssetChange = (index: number, field: "symbol" | "allocation", value: any) => {
+      const newAssets = [...formData.assets]
+   
+      if (field === "allocation") {
+        newAssets[index][field] = Number.parseFloat(value) || 0
+      } else {
+        newAssets[index][field] = value
+      }
+   
+      setFormData((prev) => ({
+        ...prev,
+        assets: newAssets,
+      }))
     }
-
-    setFormData((prev) => ({
-      ...prev,
-      assets: newAssets,
-    }))
-  }
 
   // Add new asset
   const addAsset = () => {
@@ -321,8 +355,10 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
                     type="number"
                     min="0"
                     step="1000"
-                    value={formData.totalValue}
+                    value={formData.totalValue || ""}
                     onChange={handleChange}
+                    onFocus={handleFocusNumericInput}
+                    onBlur={(e) => handleBlurNumericInput(e, "totalValue")}
                     className="pl-7"
                   />
                 </div>
@@ -367,8 +403,10 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
                   type="number"
                   min="0"
                   step="0.1"
-                  value={formData.returnRate}
+                  value={formData.returnRate || ""}
                   onChange={handleChange}
+                  onFocus={handleFocusNumericInput}
+                  onBlur={(e) => handleBlurNumericInput(e, "returnRate")}
                 />
               </div>
             </div>
@@ -394,10 +432,9 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
                   <div key={index} className="flex items-end gap-4">
                     <div className="flex-1 space-y-2">
                       <Label>{t("symbol")}</Label>
-                      <Input
+                      <AssetSymbolSelector
                         value={asset.symbol}
-                        onChange={(e) => handleAssetChange(index, "symbol", e.target.value)}
-                        placeholder="AAPL"
+                        onChange={(value) => handleAssetChange(index, "symbol", value)}
                       />
                     </div>
                     <div className="w-32 space-y-2">
@@ -407,8 +444,14 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
                         min="0"
                         max="100"
                         step="0.1"
-                        value={asset.allocation}
+                        value={asset.allocation || ""}
                         onChange={(e) => handleAssetChange(index, "allocation", e.target.value)}
+                        onFocus={handleFocusNumericInput}
+                        onBlur={(e) => {
+                          if (e.target.value === "") {
+                            handleAssetChange(index, "allocation", 0)
+                          }
+                        }}
                       />
                     </div>
                     <Button

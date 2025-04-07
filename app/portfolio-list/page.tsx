@@ -51,16 +51,30 @@ export default function PortfolioListPage() {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{
+            duration: 0.3,
+            type: "spring",
+            stiffness: 100,
+            damping: 15,
+          }}
         >
           <PortfolioGrid onEdit={handleEdit} />
         </motion.div>
       </div>
 
-      {showAddForm && <PortfolioItemForm onClose={handleFormClose} editItem={editingItem} />}
+      {showAddForm && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <PortfolioItemForm onClose={handleFormClose} editItem={editingItem} />
+        </motion.div>
+      )}
     </div>
   )
 }

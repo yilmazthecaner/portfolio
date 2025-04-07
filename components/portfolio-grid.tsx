@@ -30,6 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { motion } from "framer-motion"
 
 // Mock portfolio data
 const initialPortfolioData = [
@@ -448,7 +449,13 @@ export function PortfolioGrid({ onEdit }: PortfolioGridProps) {
           </div>
 
           {showFilters && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 p-4 border rounded-lg bg-muted/50">
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 p-4 border rounded-lg bg-muted/50"
+              initial={{ opacity: 0, height: 0, marginTop: 0 }}
+              animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+              exit={{ opacity: 0, height: 0, marginTop: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               <div>
                 <label className="text-sm font-medium block mb-2">{t("type")}</label>
                 <Select value={filters.type || "all"} onValueChange={(value) => handleFilterChange("type", value)}>
@@ -499,7 +506,7 @@ export function PortfolioGrid({ onEdit }: PortfolioGridProps) {
                   {t("clearFilters")}
                 </Button>
               </div>
-            </div>
+            </motion.div>
           )}
         </CardHeader>
         <CardContent>
@@ -584,8 +591,26 @@ export function PortfolioGrid({ onEdit }: PortfolioGridProps) {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  paginatedData.map((item) => (
-                    <TableRow key={item.id} className="cursor-pointer hover:bg-muted/50">
+                  paginatedData.map((item, index) => (
+                    <motion.tr
+                      key={item.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => onEdit(item)}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.3,
+                        delay: index * 0.05,
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 15,
+                      }}
+                      whileHover={{
+                        backgroundColor: "rgba(0,0,0,0.05)",
+                        transition: { duration: 0.1 },
+                      }}
+                      layout
+                    >
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell>{item.type}</TableCell>
                       <TableCell className="text-right">${item.totalValue.toLocaleString()}</TableCell>
@@ -605,13 +630,21 @@ export function PortfolioGrid({ onEdit }: PortfolioGridProps) {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <DropdownMenuItem
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onEdit(item)
+                              }}
+                            >
                               <Pencil className="mr-2 h-4 w-4" />
                               {t("edit")}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
-                              onClick={() => handleDelete(item.id)}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDelete(item.id)
+                              }}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               {t("delete")}
@@ -619,7 +652,7 @@ export function PortfolioGrid({ onEdit }: PortfolioGridProps) {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
-                    </TableRow>
+                    </motion.tr>
                   ))
                 )}
               </TableBody>
