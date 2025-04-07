@@ -106,7 +106,7 @@ export function PortfolioItemForm({ onClose, editItem }: PortfolioItemFormProps)
   }
 
   // Handle asset changes
-  const handleAssetChange = (index: number, field: string, value: any) => {
+  const handleAssetChange = (index: number, field: "symbol" | "allocation", value: any) => {
     const newAssets = [...formData.assets]
 
     if (field === "allocation") {

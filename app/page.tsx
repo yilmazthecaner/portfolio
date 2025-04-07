@@ -97,9 +97,10 @@ export default function DashboardPage() {
             <TabsTrigger value="overview" className="flex-1 sm:flex-none">
               {t("overview")}
             </TabsTrigger>
-            <TabsTrigger value="transactions" className="flex-1 sm:flex-none">
+            {/* <TabsTrigger value="transactions" className="flex-1 sm:flex-none">
               {t("transactions")}
-            </TabsTrigger>
+            </TabsTrigger> */}
+            {/* Uncomment to display transactions at the dashboard submenu */}
             <TabsTrigger value="assets" className="flex-1 sm:flex-none">
               {t("assets")}
             </TabsTrigger>
