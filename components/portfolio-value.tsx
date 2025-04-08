@@ -23,6 +23,8 @@ const data = [
   { date: "2025-03-05", value: 25300 },
   { date: "2025-03-20", value: 17300 },
   { date: "2025-03-24", value: 31500 },
+  { date: "2025-04-01", value: 33700 },
+  { date: "2025-04-05", value: 29800 },
 ]
 
 export function PortfolioValue({

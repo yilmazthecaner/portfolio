@@ -1,29 +1,46 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useState } from "react";
+import { motion } from "framer-motion";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { UserNav } from "@/components/user-nav"
-import { MainNav } from "@/components/main-nav"
-import { TransactionForm } from "@/components/transaction-form"
-import { TransactionHistory } from "@/components/transaction-history"
-import { useTranslation } from "@/context/translation-context"
-import { useUser } from "@/context/user-context"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UserNav } from "@/components/user-nav";
+import { MainNav } from "@/components/main-nav";
+import { TransactionForm } from "@/components/transaction-form";
+import { TransactionHistory } from "@/components/transaction-history";
+import { useTranslation } from "@/context/translation-context";
+import { useUser } from "@/context/user-context";
+import { Loader2, Save } from "lucide-react";
+import { Button } from "react-day-picker";
 
 export default function TransactionsPage() {
-  const [activeTab, setActiveTab] = useState("history")
-  const [refreshKey, setRefreshKey] = useState(0)
-  const { t } = useTranslation()
-  const { user } = useUser()
+  const [activeTab, setActiveTab] = useState("history");
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { t } = useTranslation();
+  const { user } = useUser();
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleTransactionComplete = () => {
     // Switch to history tab after completing a transaction
-    setActiveTab("history")
+    setActiveTab("history");
     // Trigger a refresh of the transaction history
-    setRefreshKey((prev) => prev + 1)
-  }
+    setRefreshKey((prev) => prev + 1);
+  };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    // Simulate save operation
+    setTimeout(() => {
+      setIsSaving(false);
+    }, 2000);
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -37,15 +54,24 @@ export default function TransactionsPage() {
       </div>
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0">
-          <h2 className="text-3xl font-bold tracking-tight">{t("transactions")}</h2>
+          <h2 className="text-3xl font-bold tracking-tight">
+            {t("transactions")}
+          </h2>
           <div className="flex items-center space-x-2">
             <div className="text-sm text-muted-foreground">
-              {t("availableCash")}: <span className="font-medium">${user?.budget.cash.toFixed(2) || "0.00"}</span>
+              {t("availableCash")}:{" "}
+              <span className="font-medium">
+                ${user?.budget.cash.toFixed(2) || "0.00"}
+              </span>
             </div>
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-4"
+        >
           <TabsList>
             <TabsTrigger value="history">{t("transactionHistory")}</TabsTrigger>
             <TabsTrigger value="new">{t("newTransaction")}</TabsTrigger>
@@ -59,7 +85,10 @@ export default function TransactionsPage() {
             transition={{ duration: 0.2 }}
           >
             <TabsContent value="history" className="space-y-4">
-              <TransactionHistory showFilters={true} refreshTrigger={refreshKey} />
+              <TransactionHistory
+                showFilters={true}
+                refreshTrigger={refreshKey}
+              />
             </TabsContent>
 
             <TabsContent value="new" className="space-y-4">
@@ -69,7 +98,22 @@ export default function TransactionsPage() {
                   <CardDescription>{t("buyOrSell")}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <TransactionForm onTransactionComplete={handleTransactionComplete} />
+                  <TransactionForm
+                    onTransactionComplete={handleTransactionComplete}
+                  />
+                  <Button disabled={isSaving} onClick={handleSave}>
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("saving")}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        {t("save")}
+                      </>
+                    )}
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -77,6 +121,5 @@ export default function TransactionsPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }
-
